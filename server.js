@@ -9,7 +9,7 @@ require('dotenv').config(); // безопасность
 
 
 const app = express();
-const PORT = 3030;
+const PORT = 8080;
 
 
 // __________
