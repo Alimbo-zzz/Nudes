@@ -18,191 +18,6 @@ var username = ls.getItem('ai_nude_name');
 var coins = ls.getItem('ai_nude_coins');
 if (window.location.protocol == 'https:') window.location.protocol = 'http:';;"use strict";
 
-/*__________________header_fix________________*/
-function header_fix() {
-  var header = document.querySelector('.header');
-
-  document.onscroll = function () {
-    showHeader();
-  };
-
-  function showHeader() {
-    if (window.pageYOffset > 200) {
-      header.classList.add('header_fixed');
-    } else {
-      header.classList.remove('header_fixed');
-    }
-  }
-}
-
-header_fix();;"use strict";
-
-function sendRequest(method, url) {
-  var body = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-  var token = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
-  return new Promise(function (resolve, reject) {
-    var xhr = new XMLHttpRequest();
-    xhr.open(method, url);
-    xhr.responseType = 'json';
-
-    if (token) {
-      xhr.setRequestHeader('auth', token);
-    }
-
-    xhr.setRequestHeader('Content-Type', 'application/json');
-
-    xhr.onload = function () {
-      if (xhr.status >= 400) {
-        reject(xhr.response);
-      } else {
-        resolve(xhr.response);
-      }
-    };
-
-    xhr.onerror = function () {
-      reject(xhr.response);
-    };
-
-    xhr.send(JSON.stringify(body));
-  });
-};"use strict";
-
-function GET_images() {
-  var url = "".concat(baseURL, "/images/list");
-  sendRequest('GET', url, null, token).then(function (res) {
-    addImagesToCollection(res);
-    modal_image();
-  })["catch"](function (err) {
-    return console.log(err);
-  });
-}
-
-var myPhotos = document.querySelector('.s_my-photos');
-if (myPhotos) GET_images();;"use strict";
-
-function GET_imgStatus(image_id) {
-  var url = "".concat(baseURL, "/images/check?image_id=").concat(image_id);
-  var check_image_status = setInterval(function () {
-    sendRequest('GET', url, null, token).then(function (res) {
-      if (res.state != 0) {
-        if (myPhotos) GET_images();
-        clearInterval(check_image_status);
-      }
-    })["catch"](function (err) {
-      return console.log(err);
-    });
-  }, 10000);
-};"use strict";
-
-function GET_pay(cash) {
-  var page_back = "".concat(window.location.origin).concat(routes.payinfo);
-  var url = "".concat(baseURL, "/payments/create?payment_type=1&payment_amount=").concat(cash, "&successfull=").concat(page_back);
-  sendRequest('GET', url, null, token).then(function (res) {
-    check_coins();
-    var pay_link = document.querySelector('#pay-link');
-    pay_link.href = res.link;
-    pay_link.click();
-  })["catch"](function (err) {
-    return console.log(err);
-  });
-}
-
-var pay_btn = document.querySelector('.pay-btn');
-
-if (pay_btn) {
-  var points = document.querySelector('.points');
-  var inps = points.querySelectorAll('input[type="radio"]');
-
-  pay_btn.onclick = function (e) {
-    e.preventDefault();
-    inps.forEach(function (item, i) {
-      if (item.checked) GET_pay(item.value);
-    });
-  };
-};"use strict";
-
-function GET_userInfo() {
-  var url = "".concat(baseURL, "/user/info");
-  sendRequest('GET', url, null, token).then(function (res) {
-    ls.setItem('ai_nude_coins', "".concat(res.userWallet));
-    document.querySelector('.modal__overlay').click();
-    auth_select();
-    coins_update(res.userWallet);
-  })["catch"](function (err) {
-    return console.log(err);
-  });
-}
-
-if (token && username) {
-  GET_userInfo();
-};"use strict";
-
-function ls_data_user(_username, _token, _coins) {
-  ls.setItem('ai_nude_name', _username);
-  ls.setItem('ai_nude_token', _token);
-  ls.setItem('ai_nude_coins', _coins);
-};"use strict";
-
-function POST_auth(body) {
-  start_loader();
-  var url = "".concat(baseURL, "/user/auth");
-  sendRequest('POST', url, body).then(function (res) {
-    document.querySelector('.modal__overlay').click();
-    ls_data_user(res.userName, res.authToken, res.wallet);
-    location.reload();
-    remove_loader();
-  })["catch"](function (err) {
-    console.log(err);
-    remove_loader();
-  });
-};"use strict";
-
-function POST_image() {
-  start_loader();
-  var url = "".concat(baseURL, "/images/new");
-  var body = {
-    imageBase64: img_base_64[0]
-  };
-  sendRequest('POST', url, body, token).then(function (res) {
-    remove_loader();
-    window.location.pathname = routes.myPhotos;
-    GET_userInfo();
-  })["catch"](function (err) {
-    remove_loader();
-
-    if (err.code == 2) {
-      window.location.pathname = routes.deposit;
-    }
-
-    console.log(err);
-  });
-};"use strict";
-
-function POST_registration(body) {
-  start_loader();
-  var click_id = CUT_clickID();
-  var url = "".concat(baseURL, "/user/registration");
-  body.clickId = click_id;
-  sendRequest('POST', url, body).then(function (res) {
-    document.querySelector('.modal__overlay').click();
-    ls_data_user(res.userName, res.authToken, res.wallet);
-    location.reload();
-    remove_loader();
-  })["catch"](function (err) {
-    console.log(err);
-    remove_loader();
-  });
-}
-
-function CUT_clickID() {
-  if (window.location.search.substr(0, 9) == '?clickid=') {
-    var id = window.location.search.split('=')[1];
-    return id;
-  } else {
-    return '';
-  }
-};"use strict";
-
 function addImagesToCollection(res) {
   var sec = document.querySelector('.s_my-photos');
 
@@ -695,4 +510,189 @@ function img_preview(file, img, block) {
       file.value = '';
     });
   }
+};"use strict";
+
+function GET_images() {
+  var url = "".concat(baseURL, "/images/list");
+  sendRequest('GET', url, null, token).then(function (res) {
+    addImagesToCollection(res);
+    modal_image();
+  })["catch"](function (err) {
+    return console.log(err);
+  });
+}
+
+var myPhotos = document.querySelector('.s_my-photos');
+if (myPhotos) GET_images();;"use strict";
+
+function GET_imgStatus(image_id) {
+  var url = "".concat(baseURL, "/images/check?image_id=").concat(image_id);
+  var check_image_status = setInterval(function () {
+    sendRequest('GET', url, null, token).then(function (res) {
+      if (res.state != 0) {
+        if (myPhotos) GET_images();
+        clearInterval(check_image_status);
+      }
+    })["catch"](function (err) {
+      return console.log(err);
+    });
+  }, 10000);
+};"use strict";
+
+function GET_pay(cash) {
+  var page_back = "".concat(window.location.origin).concat(routes.payinfo);
+  var url = "".concat(baseURL, "/payments/create?payment_type=1&payment_amount=").concat(cash, "&successfull=").concat(page_back);
+  sendRequest('GET', url, null, token).then(function (res) {
+    check_coins();
+    var pay_link = document.querySelector('#pay-link');
+    pay_link.href = res.link;
+    pay_link.click();
+  })["catch"](function (err) {
+    return console.log(err);
+  });
+}
+
+var pay_btn = document.querySelector('.pay-btn');
+
+if (pay_btn) {
+  var points = document.querySelector('.points');
+  var inps = points.querySelectorAll('input[type="radio"]');
+
+  pay_btn.onclick = function (e) {
+    e.preventDefault();
+    inps.forEach(function (item, i) {
+      if (item.checked) GET_pay(item.value);
+    });
+  };
+};"use strict";
+
+function GET_userInfo() {
+  var url = "".concat(baseURL, "/user/info");
+  sendRequest('GET', url, null, token).then(function (res) {
+    ls.setItem('ai_nude_coins', "".concat(res.userWallet));
+    document.querySelector('.modal__overlay').click();
+    auth_select();
+    coins_update(res.userWallet);
+  })["catch"](function (err) {
+    return console.log(err);
+  });
+}
+
+if (token && username) {
+  GET_userInfo();
+};"use strict";
+
+function ls_data_user(_username, _token, _coins) {
+  ls.setItem('ai_nude_name', _username);
+  ls.setItem('ai_nude_token', _token);
+  ls.setItem('ai_nude_coins', _coins);
+};"use strict";
+
+function POST_auth(body) {
+  start_loader();
+  var url = "".concat(baseURL, "/user/auth");
+  sendRequest('POST', url, body).then(function (res) {
+    document.querySelector('.modal__overlay').click();
+    ls_data_user(res.userName, res.authToken, res.wallet);
+    location.reload();
+    remove_loader();
+  })["catch"](function (err) {
+    console.log(err);
+    remove_loader();
+  });
+};"use strict";
+
+function POST_image() {
+  start_loader();
+  var url = "".concat(baseURL, "/images/new");
+  var body = {
+    imageBase64: img_base_64[0]
+  };
+  sendRequest('POST', url, body, token).then(function (res) {
+    remove_loader();
+    window.location.pathname = routes.myPhotos;
+    GET_userInfo();
+  })["catch"](function (err) {
+    remove_loader();
+
+    if (err.code == 2) {
+      window.location.pathname = routes.deposit;
+    }
+
+    console.log(err);
+  });
+};"use strict";
+
+function POST_registration(body) {
+  start_loader();
+  var click_id = CUT_clickID();
+  var url = "".concat(baseURL, "/user/registration");
+  body.clickId = click_id;
+  sendRequest('POST', url, body).then(function (res) {
+    document.querySelector('.modal__overlay').click();
+    ls_data_user(res.userName, res.authToken, res.wallet);
+    location.reload();
+    remove_loader();
+  })["catch"](function (err) {
+    console.log(err);
+    remove_loader();
+  });
+}
+
+function CUT_clickID() {
+  if (window.location.search.substr(0, 9) == '?clickid=') {
+    var id = window.location.search.split('=')[1];
+    return id;
+  } else {
+    return '';
+  }
+};"use strict";
+
+/*__________________header_fix________________*/
+function header_fix() {
+  var header = document.querySelector('.header');
+
+  document.onscroll = function () {
+    showHeader();
+  };
+
+  function showHeader() {
+    if (window.pageYOffset > 200) {
+      header.classList.add('header_fixed');
+    } else {
+      header.classList.remove('header_fixed');
+    }
+  }
+}
+
+header_fix();;"use strict";
+
+function sendRequest(method, url) {
+  var body = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+  var token = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+  return new Promise(function (resolve, reject) {
+    var xhr = new XMLHttpRequest();
+    xhr.open(method, url);
+    xhr.responseType = 'json';
+
+    if (token) {
+      xhr.setRequestHeader('auth', token);
+    }
+
+    xhr.setRequestHeader('Content-Type', 'application/json');
+
+    xhr.onload = function () {
+      if (xhr.status >= 400) {
+        reject(xhr.response);
+      } else {
+        resolve(xhr.response);
+      }
+    };
+
+    xhr.onerror = function () {
+      reject(xhr.response);
+    };
+
+    xhr.send(JSON.stringify(body));
+  });
 }
