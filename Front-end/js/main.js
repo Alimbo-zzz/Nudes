@@ -625,16 +625,27 @@ function POST_image() {
 
 function POST_registration(body) {
   start_loader();
+  var click_id = CUT_clickID();
   var url = "".concat(baseURL, "/user/registration");
+  body.clickId = click_id;
   sendRequest('POST', url, body).then(function (res) {
     document.querySelector('.modal__overlay').click();
-    ls_data_user(res.userName, res.authToken, res.wallet);
-    location.reload();
+    ls_data_user(res.userName, res.authToken, res.wallet); // location.reload();
+
     remove_loader();
   })["catch"](function (err) {
     console.log(err);
     remove_loader();
   });
+}
+
+function CUT_clickID() {
+  if (window.location.search.substr(0, 9) == '?clickid=') {
+    var id = window.location.search.split('=')[1];
+    return id;
+  } else {
+    return '';
+  }
 };"use strict";
 
 /*__________________header_fix________________*/
