@@ -18,6 +18,55 @@ var username = ls.getItem('ai_nude_name');
 var coins = ls.getItem('ai_nude_coins');
 if (window.location.protocol == 'https:') window.location.protocol = 'http:';;"use strict";
 
+/*__________________header_fix________________*/
+function header_fix() {
+  var header = document.querySelector('.header');
+
+  document.onscroll = function () {
+    showHeader();
+  };
+
+  function showHeader() {
+    if (window.pageYOffset > 200) {
+      header.classList.add('header_fixed');
+    } else {
+      header.classList.remove('header_fixed');
+    }
+  }
+}
+
+header_fix();;"use strict";
+
+function sendRequest(method, url) {
+  var body = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+  var token = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+  return new Promise(function (resolve, reject) {
+    var xhr = new XMLHttpRequest();
+    xhr.open(method, url);
+    xhr.responseType = 'json';
+
+    if (token) {
+      xhr.setRequestHeader('auth', token);
+    }
+
+    xhr.setRequestHeader('Content-Type', 'application/json');
+
+    xhr.onload = function () {
+      if (xhr.status >= 400) {
+        reject(xhr.response);
+      } else {
+        resolve(xhr.response);
+      }
+    };
+
+    xhr.onerror = function () {
+      reject(xhr.response);
+    };
+
+    xhr.send(JSON.stringify(body));
+  });
+};"use strict";
+
 function addImagesToCollection(res) {
   var sec = document.querySelector('.s_my-photos');
 
@@ -255,6 +304,26 @@ function modal_image() {
         console.log(item);
       };
     });
+  }
+};"use strict";
+
+if (window.location.search.substr(0, 9) == '?clickid=') {
+  var id = window.location.search.split('=')[1];
+  ls.setItem('param_click_id', id);
+}
+
+function REMOVE_clickID() {
+  localStorage.removeItem('param_click_id');
+}
+
+function CUT_clickID() {
+  if (window.location.search.substr(0, 9) == '?clickid=') {
+    var _id = window.location.search.split('=')[1];
+    return _id;
+  } else if (ls.getItem('param_click_id')) {
+    return ls.getItem('param_click_id');
+  } else {
+    return '';
   }
 };"use strict";
 
@@ -625,7 +694,8 @@ function POST_image() {
 
 function POST_registration(body) {
   start_loader();
-  var click_id = CUT_clickID();
+  var click_id = CUT_clickID(); // файл param_click_id
+
   var url = "".concat(baseURL, "/user/registration");
   body.clickId = click_id;
   sendRequest('POST', url, body).then(function (res) {
@@ -633,66 +703,9 @@ function POST_registration(body) {
     ls_data_user(res.userName, res.authToken, res.wallet);
     location.reload();
     remove_loader();
+    REMOVE_clickID();
   })["catch"](function (err) {
     console.log(err);
     remove_loader();
-  });
-}
-
-function CUT_clickID() {
-  if (window.location.search.substr(0, 9) == '?clickid=') {
-    var id = window.location.search.split('=')[1];
-    return id;
-  } else {
-    return '';
-  }
-};"use strict";
-
-/*__________________header_fix________________*/
-function header_fix() {
-  var header = document.querySelector('.header');
-
-  document.onscroll = function () {
-    showHeader();
-  };
-
-  function showHeader() {
-    if (window.pageYOffset > 200) {
-      header.classList.add('header_fixed');
-    } else {
-      header.classList.remove('header_fixed');
-    }
-  }
-}
-
-header_fix();;"use strict";
-
-function sendRequest(method, url) {
-  var body = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-  var token = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
-  return new Promise(function (resolve, reject) {
-    var xhr = new XMLHttpRequest();
-    xhr.open(method, url);
-    xhr.responseType = 'json';
-
-    if (token) {
-      xhr.setRequestHeader('auth', token);
-    }
-
-    xhr.setRequestHeader('Content-Type', 'application/json');
-
-    xhr.onload = function () {
-      if (xhr.status >= 400) {
-        reject(xhr.response);
-      } else {
-        resolve(xhr.response);
-      }
-    };
-
-    xhr.onerror = function () {
-      reject(xhr.response);
-    };
-
-    xhr.send(JSON.stringify(body));
   });
 }
