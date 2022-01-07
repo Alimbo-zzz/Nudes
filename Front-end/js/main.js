@@ -5,7 +5,7 @@ var baseURL = "http://149.28.153.46:10101/v1";
 var routes = {
   home: '/',
   about: '/about',
-  create: '/create.html',
+  create: '/create',
   deposit: '/deposit',
   myPhotos: '/myPhotos',
   payinfo: '/payinfo'
@@ -17,55 +17,6 @@ var token = ls.getItem('ai_nude_token');
 var username = ls.getItem('ai_nude_name');
 var coins = ls.getItem('ai_nude_coins');
 if (window.location.protocol == 'https:') window.location.protocol = 'http:';;"use strict";
-
-/*__________________header_fix________________*/
-function header_fix() {
-  var header = document.querySelector('.header');
-
-  document.onscroll = function () {
-    showHeader();
-  };
-
-  function showHeader() {
-    if (window.pageYOffset > 200) {
-      header.classList.add('header_fixed');
-    } else {
-      header.classList.remove('header_fixed');
-    }
-  }
-}
-
-header_fix();;"use strict";
-
-function sendRequest(method, url) {
-  var body = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-  var token = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
-  return new Promise(function (resolve, reject) {
-    var xhr = new XMLHttpRequest();
-    xhr.open(method, url);
-    xhr.responseType = 'json';
-
-    if (token) {
-      xhr.setRequestHeader('auth', token);
-    }
-
-    xhr.setRequestHeader('Content-Type', 'application/json');
-
-    xhr.onload = function () {
-      if (xhr.status >= 400) {
-        reject(xhr.response);
-      } else {
-        resolve(xhr.response);
-      }
-    };
-
-    xhr.onerror = function () {
-      reject(xhr.response);
-    };
-
-    xhr.send(JSON.stringify(body));
-  });
-};"use strict";
 
 function GET_images() {
   var url = "".concat(baseURL, "/images/list");
@@ -747,4 +698,53 @@ function img_preview(file, img, block) {
       file.value = '';
     });
   }
+};"use strict";
+
+/*__________________header_fix________________*/
+function header_fix() {
+  var header = document.querySelector('.header');
+
+  document.onscroll = function () {
+    showHeader();
+  };
+
+  function showHeader() {
+    if (window.pageYOffset > 200) {
+      header.classList.add('header_fixed');
+    } else {
+      header.classList.remove('header_fixed');
+    }
+  }
+}
+
+header_fix();;"use strict";
+
+function sendRequest(method, url) {
+  var body = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+  var token = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+  return new Promise(function (resolve, reject) {
+    var xhr = new XMLHttpRequest();
+    xhr.open(method, url);
+    xhr.responseType = 'json';
+
+    if (token) {
+      xhr.setRequestHeader('auth', token);
+    }
+
+    xhr.setRequestHeader('Content-Type', 'application/json');
+
+    xhr.onload = function () {
+      if (xhr.status >= 400) {
+        reject(xhr.response);
+      } else {
+        resolve(xhr.response);
+      }
+    };
+
+    xhr.onerror = function () {
+      reject(xhr.response);
+    };
+
+    xhr.send(JSON.stringify(body));
+  });
 }
