@@ -27,6 +27,10 @@ router.get('/myPhotos', (req, res)=>{
 	res.sendfile(createPath('myPhotos'))
 })
 
+router.get('/test', (req, res)=>{
+	res.sendfile(createPath('test'))
+})
+
 
 
 
