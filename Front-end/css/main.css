@@ -1133,6 +1133,40 @@ a {
   font-size: 2em;
 }
 
+.my-photos-nav {
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  margin: 0.5em auto;
+}
+
+.my-photos-nav__link {
+  color: #FF5C00;
+  font-weight: bold;
+  font-size: 1.2em;
+  display: block;
+  margin-right: 1em;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  cursor: pointer;
+  padding: 0.5em;
+  border-radius: 0.2em;
+  line-height: 0.5em;
+  border: 1px solid;
+}
+
+.my-photos-nav__link:last-child {
+  margin-right: 0;
+}
+
 .my-photos__list {
   display: -webkit-box;
   display: -webkit-flex;
