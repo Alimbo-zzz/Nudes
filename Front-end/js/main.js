@@ -9,7 +9,8 @@ var routes = {
   create: '/create',
   deposit: '/deposit',
   myPhotos: '/myPhotos',
-  payinfo: '/payinfo'
+  successpay: 'successpay',
+  failedpay: 'failedpay'
 };
 var img_base_64 = null;
 var base64_text = 'data:image/png;base64,';
@@ -51,8 +52,9 @@ function GET_imgStatus(image_id) {
 };"use strict";
 
 function GET_pay(cash) {
-  var page_back = "".concat(window.location.origin).concat(routes.payinfo);
-  var url = "".concat(baseURL, "/payments/create?payment_type=1&payment_amount=").concat(cash, "&successfull=").concat(page_back);
+  var page_success = "".concat(routes.successpay);
+  var page_failed = "".concat(routes.failedpay);
+  var url = "".concat(baseURL, "/payments/create?payment_type=1&payment_amount=").concat(cash, "&successpay=").concat(page_success, "&failedpay=").concat(page_failed);
   sendRequest('GET', url, null, token).then(function (res) {
     check_coins();
     var pay_link = document.querySelector('#pay-link');

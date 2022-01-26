@@ -27,8 +27,12 @@ router.get('/myPhotos', (req, res)=>{
 	res.sendfile(createPath('myPhotos'))
 })
 
-router.get('/test', (req, res)=>{
-	res.sendfile(createPath('test'))
+router.get('/failedpay', (req, res)=>{
+	res.sendfile(createPath('failedpay'))
+})
+
+router.get('/successpay', (req, res)=>{
+	res.sendfile(createPath('successpay'))
 })
 
 
