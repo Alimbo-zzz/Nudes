@@ -19,159 +19,6 @@ var token = ls.getItem('ai_nude_token');
 var username = ls.getItem('ai_nude_name');
 var coins = ls.getItem('ai_nude_coins'); // if(window.location.protocol == 'https:' && window.location.pathname != '/test') window.location.protocol = 'http:';;"use strict";
 
-function GET_images() {
-  var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-  var url = "".concat(baseURL, "/images/list?page=").concat(page, "&count=5");
-  start_loader();
-  sendRequest('GET', url, null, token).then(function (res) {
-    addImagesToCollection(res.images);
-    modal_image();
-    myPhotos_nav(res.pageCount);
-    remove_loader();
-  })["catch"](function (err) {
-    console.log(err);
-    remove_loader();
-  });
-}
-
-var myPhotos = document.querySelector('.s_my-photos');
-if (myPhotos) GET_images();;"use strict";
-
-function GET_imgStatus(image_id) {
-  var url = "".concat(baseURL, "/images/check?image_id=").concat(image_id);
-  var check_image_status = setInterval(function () {
-    sendRequest('GET', url, null, token).then(function (res) {
-      if (res.state != 0) {
-        if (myPhotos) GET_images();
-        clearInterval(check_image_status);
-      }
-    })["catch"](function (err) {
-      return console.log(err);
-    });
-  }, 10000);
-};"use strict";
-
-function GET_pay(cash) {
-  var page_success = "".concat(routes.successpay);
-  var page_failed = "".concat(routes.failedpay);
-  var url = "".concat(baseURL, "/payments/create?payment_type=1&payment_amount=").concat(cash, "&successpay=").concat(page_success, "&failedpay=").concat(page_failed);
-  sendRequest('GET', url, null, token).then(function (res) {
-    check_coins();
-    var pay_link = document.querySelector('#pay-link');
-    pay_link.href = res.link;
-    pay_link.click();
-  })["catch"](function (err) {
-    return console.log(err);
-  });
-}
-
-var pay_btn = document.querySelector('.pay-btn');
-
-if (pay_btn) {
-  var points = document.querySelector('.points');
-  var inps = points.querySelectorAll('input[type="radio"]');
-
-  pay_btn.onclick = function (e) {
-    e.preventDefault();
-    inps.forEach(function (item, i) {
-      if (item.checked) GET_pay(item.value);
-    });
-  };
-};"use strict";
-
-function GET_userInfo() {
-  var url = "".concat(baseURL, "/user/info");
-  sendRequest('GET', url, null, token).then(function (res) {
-    ls.setItem('ai_nude_coins', "".concat(res.userWallet));
-    document.querySelector('.modal__overlay').click();
-    auth_select();
-    coins_update(res.userWallet);
-  })["catch"](function (err) {
-    return console.log(err);
-  });
-}
-
-if (token && username) {
-  GET_userInfo();
-};"use strict";
-
-function ls_data_user(_username, _token, _coins) {
-  ls.setItem('ai_nude_name', _username);
-  ls.setItem('ai_nude_token', _token);
-  ls.setItem('ai_nude_coins', _coins);
-};"use strict";
-
-function POST_auth(body) {
-  start_loader();
-  var url = "".concat(baseURL, "/user/auth");
-  sendRequest('POST', url, body).then(function (res) {
-    document.querySelector('.modal__overlay').click();
-    ls_data_user(res.userName, res.authToken, res.wallet);
-    location.reload();
-    remove_loader();
-  })["catch"](function (err) {
-    console.log(err);
-    remove_loader();
-  });
-};"use strict";
-
-function POST_image() {
-  var url = "".concat(baseURL, "/images/new");
-  var body = {
-    imageBase64: null
-  };
-
-  if (img_base_64) {
-    body.imageBase64 = img_base_64[0];
-  }
-
-  if (!body.imageBase64) {
-    modal('<h1>No image selected(</h1>');
-  }
-
-  if (body.imageBase64) {
-    start_loader();
-    sendRequest('POST', url, body, token).then(function (res) {
-      remove_loader();
-      window.location.pathname = routes.myPhotos;
-      GET_userInfo();
-    })["catch"](function (err) {
-      remove_loader();
-
-      if (err.code == 2) {
-        window.location.pathname = routes.deposit;
-      }
-
-      console.log(err);
-    });
-  }
-};"use strict";
-
-function POST_registration(body) {
-  start_loader();
-  var params = CUT_clickID(); // файл param_click_id
-
-  var url = "".concat(baseURL, "/user/registration");
-  body.parameters = params;
-  sendRequest('POST', url, body).then(function (res) {
-    document.querySelector('.modal__overlay').click();
-    ls_data_user(res.userName, res.authToken, res.wallet);
-    location.reload();
-    remove_loader();
-    REMOVE_clickID();
-  })["catch"](function (err) {
-    console.log(err);
-    remove_loader();
-  });
-};"use strict";
-
-if (window.location.pathname == '/test') {
-  POST_auth({
-    userName: 'test7',
-    userPassword: 'test7'
-  });
-};"use strict";
-
 function addImagesToCollection(res) {
   var sec = document.querySelector('.s_my-photos');
 
@@ -435,26 +282,6 @@ function myPhotos_nav(res) {
       _loop(i);
     }
   });
-};"use strict";
-
-if (window.location.search != '') {
-  var id = window.location.search.split('?')[1];
-  ls.setItem('param_click_id', id);
-}
-
-function REMOVE_clickID() {
-  localStorage.removeItem('param_click_id');
-}
-
-function CUT_clickID() {
-  if (window.location.search != '') {
-    var _id = window.location.search.split('?')[1];
-    return _id;
-  } else if (ls.getItem('param_click_id')) {
-    return ls.getItem('param_click_id');
-  } else {
-    return '';
-  }
 };"use strict";
 
 // radio__btns
@@ -739,6 +566,155 @@ function img_preview(file, img, block) {
   }
 };"use strict";
 
+function GET_images() {
+  var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+  var url = "".concat(baseURL, "/images/list?page=").concat(page, "&count=5");
+  start_loader();
+  sendRequest('GET', url, null, token).then(function (res) {
+    addImagesToCollection(res.images);
+    modal_image();
+    myPhotos_nav(res.pageCount);
+    remove_loader();
+  })["catch"](function (err) {
+    console.log(err);
+    remove_loader();
+  });
+}
+
+var myPhotos = document.querySelector('.s_my-photos');
+if (myPhotos) GET_images();;"use strict";
+
+function GET_imgStatus(image_id) {
+  var url = "".concat(baseURL, "/images/check?image_id=").concat(image_id);
+  var check_image_status = setInterval(function () {
+    sendRequest('GET', url, null, token).then(function (res) {
+      if (res.state != 0) {
+        if (myPhotos) GET_images();
+        clearInterval(check_image_status);
+      }
+    })["catch"](function (err) {
+      return console.log(err);
+    });
+  }, 10000);
+};"use strict";
+
+function GET_pay(cash) {
+  var page_success = "".concat(routes.successpay);
+  var page_failed = "".concat(routes.failedpay);
+  var url = "".concat(baseURL, "/payments/create?payment_type=1&payment_amount=").concat(cash, "&successpay=").concat(page_success, "&failedpay=").concat(page_failed);
+  sendRequest('GET', url, null, token).then(function (res) {
+    check_coins();
+    var pay_link = document.querySelector('#pay-link');
+    pay_link.href = res.link;
+    pay_link.click();
+  })["catch"](function (err) {
+    return console.log(err);
+  });
+}
+
+var pay_btn = document.querySelector('.pay-btn');
+
+if (pay_btn) {
+  var points = document.querySelector('.points');
+  var inps = points.querySelectorAll('input[type="radio"]');
+
+  pay_btn.onclick = function (e) {
+    e.preventDefault();
+    inps.forEach(function (item, i) {
+      if (item.checked) GET_pay(item.value);
+    });
+  };
+};"use strict";
+
+function GET_userInfo() {
+  var url = "".concat(baseURL, "/user/info");
+  sendRequest('GET', url, null, token).then(function (res) {
+    ls.setItem('ai_nude_coins', "".concat(res.userWallet));
+    document.querySelector('.modal__overlay').click();
+    auth_select();
+    coins_update(res.userWallet);
+  })["catch"](function (err) {
+    return console.log(err);
+  });
+}
+
+if (token && username) {
+  GET_userInfo();
+};"use strict";
+
+function ls_data_user(_username, _token, _coins) {
+  ls.setItem('ai_nude_name', _username);
+  ls.setItem('ai_nude_token', _token);
+  ls.setItem('ai_nude_coins', _coins);
+};"use strict";
+
+function POST_auth(body) {
+  start_loader();
+  var url = "".concat(baseURL, "/user/auth");
+  sendRequest('POST', url, body).then(function (res) {
+    document.querySelector('.modal__overlay').click();
+    ls_data_user(res.userName, res.authToken, res.wallet);
+    location.reload();
+    remove_loader();
+  })["catch"](function (err) {
+    console.log(err);
+    remove_loader();
+  });
+};"use strict";
+
+function POST_image() {
+  var url = "".concat(baseURL, "/images/new");
+  var body = {
+    imageBase64: null
+  };
+
+  if (img_base_64) {
+    body.imageBase64 = img_base_64[0];
+  }
+
+  if (!body.imageBase64) {
+    modal('<h1>No image selected(</h1>');
+  }
+
+  if (body.imageBase64) {
+    start_loader();
+    sendRequest('POST', url, body, token).then(function (res) {
+      remove_loader();
+      window.location.pathname = routes.myPhotos;
+      GET_userInfo();
+    })["catch"](function (err) {
+      remove_loader();
+
+      if (err.code == 2) {
+        window.location.pathname = routes.deposit;
+      }
+
+      console.log(err);
+    });
+  }
+};"use strict";
+
+function POST_registration(body) {
+  start_loader();
+  var params = CUT_all_param();
+  var clickid = CUT_clickID(); // файл param_click_id
+
+  var url = "".concat(baseURL, "/user/registration");
+  body.parameters = params;
+  body.clickId = clickid;
+  sendRequest('POST', url, body).then(function (res) {
+    document.querySelector('.modal__overlay').click();
+    ls_data_user(res.userName, res.authToken, res.wallet);
+    location.reload();
+    remove_loader();
+    REMOVE_clickID();
+    REMOVE_all_param();
+  })["catch"](function (err) {
+    console.log(err);
+    remove_loader();
+  });
+};"use strict";
+
 /*__________________header_fix________________*/
 function header_fix() {
   var header = document.querySelector('.header');
@@ -786,4 +762,55 @@ function sendRequest(method, url) {
 
     xhr.send(JSON.stringify(body));
   });
+};"use strict";
+
+if (window.location.search != '') {
+  var id = window.location.search.split('?')[1];
+  ls.setItem('all_param', id);
+}
+
+function REMOVE_all_param() {
+  localStorage.removeItem('all_param');
+}
+
+function CUT_all_param() {
+  if (window.location.search != '') {
+    var _id = window.location.search.split('?')[1];
+    return _id;
+  } else if (ls.getItem('all_param')) {
+    return ls.getItem('all_param');
+  } else {
+    return '';
+  }
+};"use strict";
+
+function ls_save_click_id() {
+  var search = window.location.search;
+  var search_arr = search.split('?')[1].split('&');
+  search_arr.forEach(function (el, i) {
+    var param = el.split('=');
+    var key = param[0];
+    var value = param[1];
+
+    if (key == 'clickid') {
+      ls.setItem('param_click_id', value);
+    }
+  });
+}
+
+ls_save_click_id();
+
+function REMOVE_clickID() {
+  localStorage.removeItem('param_click_id');
+}
+
+function CUT_clickID() {
+  if (window.location.search != '') {
+    ls_save_click_id();
+    return ls.getItem('param_click_id');
+  } else if (ls.getItem('param_click_id')) {
+    return ls.getItem('param_click_id');
+  } else {
+    return '';
+  }
 }
