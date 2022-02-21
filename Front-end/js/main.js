@@ -46,7 +46,7 @@ function addImagesToCollection(res) {
   }
 };"use strict";
 
-var autorization_modal = "\n\t<div class=\"authorization\">\n\t\t<form autocomplete=\"off\" class=\"authorization__form\">\n\n\t\t\t<div class=\"authorization__block\">\n\t\t\t \t<a class=\"authorization__back\"></a>\n\t\t\t\t<div class=\"btn authorization__change\"><span></span></div>\n\t\t\t</div>\n\t\t\t<div class=\"authorization__block\">\n\t\t\t\t<img class=\"authorization__logo\" src=\"./assets/images/icons/LOGO.svg\"/>\n\t\t\t\t<p class=\"text\">Sign in to continue</p>\n\t\t\t</div>\n\t\t\t<div class=\"authorization__block\">\n\t\t\t\t<input required type=\"text\" name=\"name\" placeholder=\"Enter username\" class=\"inp\"/>\n\t\t\t\t<input required type=\"password\" name=\"pass\" placeholder=\"Enter password\" class=\"inp\"/>\n\t\t\t\t<a href=\"#\" class=\"authorization__forgot\">Forgot password</a>\n\t\t\t</div>\n\t\t\t<div class=\"authorization__block\">\n\t\t\t\t<button type=\"send\" id=\"send_sign_in\" class=\"btn _orange authorization__sing-in\">Sign in</button>\n\t\t\t\t<button type=\"send\" id=\"send_sign_up\" class=\"btn authorization__sing-up\">Sign up</button>\n\t\t\t</div>\n\t\t</form>\n\t</div>\n";
+var autorization_modal = "\n\t<div class=\"authorization\">\n\t\t<div class=\"authorization__form\">\n\n\t\t\t<div class=\"authorization__block\">\n\t\t\t \t<a class=\"authorization__back\"></a>\n\t\t\t\t<div class=\"btn authorization__change\"><span></span></div>\n\t\t\t</div>\n\t\t\t<div class=\"authorization__block\">\n\t\t\t\t<img class=\"authorization__logo\" src=\"./assets/images/icons/LOGO.svg\"/>\n\t\t\t\t<p class=\"text\">Sign in to continue</p>\n\t\t\t</div>\n\t\t\t<div class=\"authorization__block\">\n\t\t\t\t<input required type=\"text\" name=\"name\" placeholder=\"Enter username\" class=\"inp\"/>\n\t\t\t\t<input required type=\"password\" name=\"pass\" placeholder=\"Enter password\" class=\"inp\"/>\n\t\t\t\t<a href=\"#\" class=\"authorization__forgot\">Forgot password</a>\n\t\t\t</div>\n\t\t\t<div class=\"authorization__block\">\n\t\t\t\t<button type=\"send\" id=\"send_sign_in\" class=\"btn _orange authorization__sing-in\">Sign in</button>\n\t\t\t\t<button type=\"send\" id=\"send_sign_up\" class=\"btn authorization__sing-up\">Sign up</button>\n\t\t\t</div>\n\t\t</div>\n\t</div>\n";
 
 function authorization(value) {
   var modal = document.querySelector('.modal');
@@ -56,10 +56,7 @@ function authorization(value) {
   var inp_name = form.querySelector('input[name="name"]');
   var inp_pass = form.querySelector('input[name="pass"]');
   var btn_signIn = form.querySelector('#send_sign_in');
-  var btn_signUp = form.querySelector('#send_sign_up');
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-  });
+  var btn_signUp = form.querySelector('#send_sign_up'); // form.addEventListener('submit', (e)=>{e.preventDefault()})
 
   if (value == 'sign_in') {
     form.classList.add('_sing');
